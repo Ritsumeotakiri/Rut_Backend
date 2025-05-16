@@ -45,5 +45,34 @@ router.delete('/history/:raceId', async (req, res) => {
   }
 });
 
+router.get('/history', async (req, res) => {
+  try {
+    const grouped = await HistoryResult.aggregate([
+      {
+        $group: {
+          _id: '$raceId',
+          raceName: { $first: '$raceName' },
+          createdAt: { $first: '$createdAt' },
+          results: {
+            $push: {
+              participantName: '$participantName',
+              bibNumber: '$bibNumber',
+              swimTime: '$swimTime',
+              cycleTime: '$cycleTime',
+              runTime: '$runTime',
+              totalTime: '$totalTime'
+            }
+          }
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
+
+    res.json(grouped);
+  } catch (err) {
+    console.error('❌ Error fetching history:', err.message);
+    res.status(500).json({ error: 'Failed to fetch race history' });
+  }
+});
 
 module.exports = router;
