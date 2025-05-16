@@ -28,8 +28,8 @@ router.post('/:raceId/push-history', async (req, res) => {
         raceId,
         raceName,
         participantId: p._id,
-        participantName: p.name,      // ✅ Include name
-        bibNumber: p.bibNumber,       // ✅ Include bib
+        participantName: p.name,
+        bibNumber: p.bibNumber,
         swimTime,
         cycleTime,
         runTime,
