@@ -13,14 +13,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Routes
 const participantRoutes = require('./routes/participants');
-const raceRoutes = require('./routes/races');
-const historyRoutes = require('./routes/history');
-
-app.use('/history', historyRoutes);
-
 
 app.use('/participants', participantRoutes);
-app.use('/races', raceRoutes);
 
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
