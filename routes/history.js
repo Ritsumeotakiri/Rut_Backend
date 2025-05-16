@@ -36,4 +36,14 @@ router.post('/save', async (req, res) => {
   }
 });
 
+router.delete('/history/:raceId', async (req, res) => {
+  try {
+    await HistoryResult.deleteMany({ raceId: req.params.raceId });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete history' });
+  }
+});
+
+
 module.exports = router;
