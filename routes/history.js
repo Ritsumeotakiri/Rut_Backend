@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const HistoryResult = require('../models/historyResult');
-const Participant = require('../models/participant');
+const Participant = require('../models/Participant');
 
 router.post('/:raceId/push-history', async (req, res) => {
   const { raceId } = req.params;
