@@ -14,20 +14,21 @@ router.get('/', async (req, res) => {
 
 // POST create a new participant
 router.post('/', async (req, res) => {
-  const { bibNumber, name, raceId } = req.body;
+  const { bibNumber, name } = req.body;
 
-  if (!bibNumber || !name || !raceId) {
-    return res.status(400).json({ error: 'bibNumber, name, and raceId are required' });
+  if (!bibNumber || !name) {
+    return res.status(400).json({ error: 'bibNumber and name are required' });
   }
 
   try {
-    const participant = new Participant({ bibNumber, name, raceId });
+    const participant = new Participant({ bibNumber, name });
     await participant.save();
     res.status(201).json(participant);
   } catch (err) {
     res.status(500).json({ error: 'Failed to create participant' });
   }
 });
+
 
 // DELETE participant by ID
 router.delete('/:id', async (req, res) => {
@@ -39,15 +40,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// GET participants by raceId
-router.get('/race/:raceId', async (req, res) => {
-  try {
-    const participants = await Participant.find({ raceId: req.params.raceId });
-    res.json(participants);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to get participants by raceId' });
-  }
-});
 
 // PUT update participant by ID
 router.put('/:id', async (req, res) => {
