@@ -61,4 +61,21 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// POST /participants/bulk
+router.post('/bulk', async (req, res) => {
+  try {
+    const participants = req.body;
+
+    if (!Array.isArray(participants)) {
+      return res.status(400).json({ error: 'Data must be an array of participants' });
+    }
+
+    const created = await Participant.insertMany(participants);
+    res.status(201).json(created);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to insert participants' });
+  }
+});
+
+
 module.exports = router;
