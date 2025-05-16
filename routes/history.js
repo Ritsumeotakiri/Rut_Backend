@@ -1,19 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const HistoryResult = require('../models/historyResult');
+const HistoryResult = require('../models/historyResult'); 
 
+// ✅ POST /races/save
 router.post('/save', async (req, res) => {
-  const { results, raceName } = req.body;
+  const { raceName, results } = req.body;
 
   if (!raceName || !Array.isArray(results)) {
-    return res.status(400).json({ error: 'raceName and results array are required' });
+    return res.status(400).json({ error: 'raceName and results[] are required' });
   }
 
   try {
-    const historyDocs = results.map((r) => ({
-      raceId: Date.now().toString(), // Generate one here just to group them
+    const raceId = Date.now().toString(); // auto-generate a group ID
+
+    const entries = results.map((r) => ({
+      raceId,
       raceName,
-      participantId: r.participantId || null, // optional
       participantName: r.participantName,
       bibNumber: r.bibNumber,
       swimTime: r.swimTime,
@@ -22,15 +24,15 @@ router.post('/save', async (req, res) => {
       totalTime: r.totalTime,
     }));
 
-    await HistoryResult.insertMany(historyDocs);
+    const saved = await HistoryResult.insertMany(entries);
 
     res.json({
-      message: `✅ ${historyDocs.length} static results saved`,
-      data: historyDocs
+      message: `✅ ${saved.length} results saved to history`,
+      data: saved,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to save results' });
+    console.error('❌ Save error:', err);
+    res.status(500).json({ error: 'Failed to save race results' });
   }
 });
 

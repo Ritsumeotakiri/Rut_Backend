@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const historyResultSchema = new mongoose.Schema({
-  raceId: { type: String, required: true },
   raceName: { type: String, required: true },
 
   participantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Participant', required: true },
