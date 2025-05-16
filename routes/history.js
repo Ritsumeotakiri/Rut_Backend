@@ -12,6 +12,7 @@ router.post('/:raceId/push-history', async (req, res) => {
   }
 
   try {
+    // Find all players in this race
     const participants = await Participant.find({ raceId });
 
     if (participants.length === 0) {
@@ -19,10 +20,10 @@ router.post('/:raceId/push-history', async (req, res) => {
     }
 
     const historyData = participants.map(p => {
-      const swimTime = p.swimTime || 0;
-      const cycleTime = p.cycleTime || 0;
-      const runTime = p.runTime || 0;
-      const totalTime = swimTime + cycleTime + runTime;
+      const swim = p.swimTime || 0;
+      const cycle = p.cycleTime || 0;
+      const run = p.runTime || 0;
+      const total = swim + cycle + run;
 
       return {
         raceId,
@@ -30,19 +31,22 @@ router.post('/:raceId/push-history', async (req, res) => {
         participantId: p._id,
         participantName: p.name,
         bibNumber: p.bibNumber,
-        swimTime,
-        cycleTime,
-        runTime,
-        totalTime,
+        swimTime: swim,
+        cycleTime: cycle,
+        runTime: run,
+        totalTime: total,
       };
     });
 
     await HistoryResult.insertMany(historyData);
 
-    res.json({ message: '✅ Results pushed to history', count: historyData.length });
+    res.json({
+      message: `✅ ${historyData.length} participant results saved to history`,
+      data: historyData
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: '❌ Server error while pushing to history' });
+    console.error('❌ Failed to save history:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
