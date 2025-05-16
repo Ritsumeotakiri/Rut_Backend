@@ -5,37 +5,42 @@ const cors = require('cors');
 
 const app = express();
 
-// Middleware
+// 🔐 Middleware
 app.use(cors());
 app.use(express.json());
 
-// DB Connection
+// 🌐 MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
   .then(() => console.log('✅ MongoDB connected'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err);
+    process.exit(1); // Optional: exit on fail
+  });
 
-// Logger
+// 🪵 Logger Middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
 });
 
-// Routes
+// 🛣️ Routes
 const participantRoutes = require('./routes/participants');
-const historyRoutes = require('./routes/history'); // 👈 add this line
+const historyRoutes = require('./routes/history');
 
-app.use('/participants', participantRoutes);
-app.use('/races', historyRoutes); // 👈 endpoint becomes /races/:raceId/push-history
+app.use('/participants', participantRoutes);   // e.g. /participants POST/GET/DELETE
+app.use('/races', historyRoutes);              // e.g. /races/save or /races/:id/push-history
 
-// Health Check
+// 🩺 Health Check
 app.get('/ping', (req, res) => {
   console.log('✅ Flutter app pinged the backend at', new Date().toISOString());
   res.json({ message: 'Backend is alive!' });
 });
 
-// Start Server
+// 🚀 Start Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);
